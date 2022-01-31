@@ -9,7 +9,7 @@ pygame.display.set_caption("Imagen y posicion al azar con randint")
 colorFondo=(1,150,70)
 colorRectangulo=(255,60,40)
 #carga de imagen
-imagen=pygame.image.load("../Imagenes/feliz-cumple.jpg")
+imagen=pygame.image.load("imagenes/feliz-cumple.jpg")
 #posision de la imagen
 posX,posY=(0,0)
 while True:

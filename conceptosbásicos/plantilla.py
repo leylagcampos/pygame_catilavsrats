@@ -4,7 +4,7 @@ from pygame.locals import *
 
 pygame.init()
 ventana=pygame.display.set_mode((500,500))
-pygame.display.set_caption("Catila vs Rats")
+pygame.display.set_caption("Titulo")
 colorFondo=(1,150,70)
 
 
