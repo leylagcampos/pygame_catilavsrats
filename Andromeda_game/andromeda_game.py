@@ -1,6 +1,5 @@
 import sys
 import pygame
-import sys
 from pygame.locals import *
 #importar clases
 from clases import jugador
@@ -13,6 +12,9 @@ ANCHO=650
 ALTO=950
 
 listaAsteroide=[]
+
+puntos=0
+colorFuente=(255,255,255)
 #booleano juego
 
 jugando=True
@@ -21,6 +23,12 @@ jugando=True
 def cargarAsteroide(x,y):
     astro=asteroide.astro(x,y)
     listaAsteroide.append(astro)
+
+def gameOver():
+    global jugando
+    jugando=False
+    for astros in listaAsteroide:
+        listaAsteroide.remove(astros)
 
 #funcion principal
 def andromeda():
@@ -37,6 +45,16 @@ def andromeda():
     ovni=jugador.ovni()
 
     contador=0
+
+    #Sonidos
+    pygame.mixer.music.load("sonidos/andromedavoices.mp3")
+    pygame.mixer.music.play(5)
+    sonidocolision=pygame.mixer.Sound("sonidos/colision.mp3")
+
+    #Marcadorfuente
+    fuenteMarcador=pygame.font.SysFont("Consolas",30)
+
+
     #ciclo del juego
     while True:
 
@@ -44,6 +62,10 @@ def andromeda():
         
         # Tiempo
         tiempo=perf_counter()
+        #Marcador
+        global puntos
+        textoMarcador=fuenteMarcador.render("Puntos:" + str(puntos),0,colorFuente)
+        ventana.blit(textoMarcador,(0,0))
         #creamos asteroides
         if tiempo-contador>1:
             contador=tiempo
@@ -53,15 +75,18 @@ def andromeda():
         #comprobar lista asteroide
         if len(listaAsteroide)>0:
             for x in listaAsteroide:
-                x.dibujar(ventana)
-                x.recorrido()
+                if jugando==True:
+                    x.dibujar(ventana)
+                    x.recorrido()
                 if x.rect.top>950:
                     listaAsteroide.remove(x)
                 else:
                     if x.rect.colliderect(ovni.rect):
                         listaAsteroide.remove(x)
-                        print("Colision ovni/astro")
-                        #gameover()
+                        sonidocolision.play()
+                        #print("Colision ovni/astro")
+                        ovni.vida=False
+                        gameOver()
 
 
         #Disparo del  proyectil
@@ -76,7 +101,8 @@ def andromeda():
                         if x.rect.colliderect(astros.rect):
                             listaAsteroide.remove(astros)
                             ovni.listaDisparo.remove(x)
-                            print("Colision disparo/astro")
+                            puntos+=1
+                            #print("Colision disparo/astro")
 
         ovni.dibujar(ventana)
         ovni.mover()
@@ -85,13 +111,20 @@ def andromeda():
                 pygame.quit()
                 sys.exit()
             elif evento.type==pygame.KEYDOWN:
-                if evento.key==K_LEFT:
-                    ovni.rect.left-=ovni.velocidad
-                elif evento.key==K_RIGHT:
-                    ovni.rect.right+=ovni.velocidad
-                elif evento.key==K_SPACE:
-                    x,y=ovni.rect.center
-                    ovni.disparar(x,y)
+                if jugando==True:
+                    if evento.key==K_LEFT:
+                        ovni.rect.left-=ovni.velocidad
+                    elif evento.key==K_RIGHT:
+                        ovni.rect.right+=ovni.velocidad
+                    elif evento.key==K_SPACE:
+                        x,y=ovni.rect.center
+                        ovni.disparar(x,y)
+        if jugando==False:
+            FuenteGameOver=pygame.font.SysFont("Consolar",60)
+            textoGameOver=FuenteGameOver.render("Game Over",0,colorFuente)
+            ventana.blit(textoGameOver,(220,450))
+            pygame.mixer.music.fadeout(3000)
+
         pygame.display.update()
 
 #llamada a funcion principal
