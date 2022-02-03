@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 pygame = "*"
 pyinstaller = "*"
+auto-py-to-exe = "*"
+setuptools = "==44.0.0"
 
 [dev-packages]
 
